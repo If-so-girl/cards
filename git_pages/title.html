@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Пьяница</title>
+<script type="text/javascript">
+<!--
+function show_rules() {
+	if (document.f_title.but.value == "Показать правила игры") {
+		document.getElementById('rules').style.visibility = "visible";
+		document.f_title.but.value = "Скрыть правила игры";
+	}
+	else if(document.f_title.but.value == "Скрыть правила игры"){
+		document.getElementById('rules').style.visibility = "hidden";
+		document.f_title.but.value = "Показать правила игры";
+	}
+}
+//-->
+</script>
+<style type="text/css">
+.hid_p {
+	font-style: italic;
+	color: #003;
+	font-size: 16px;
+	background-color:#FFC;
+	text-align:center;
+	visibility:hidden;
+}
+</style>
+</head>
+<body bgcolor="#99FFFF"">
+<form name="f_title">
+<h2 align="center" style=" border:'2px' border-color:'##FF9'; font-family:'Comic Sans MS', cursive; font-size:24px; color: #006;">Карточная игра "Пьяница"</h2>
+<p align="center"><input type = "button" name = "but" value = "Показать правила игры" onclick = "show_rules()"></p>
+<p id = "rules" class = "hid_p">Правила игры следующие. Колода тасуется и раздается поровну между всеми игроками. Игроки не смотрят своих карт, в каждый ход снимают верхнюю карту и смотрят, чья карта старше. Тот игрок у которого карта старше, забирает карты и кладет их под низ своей колоды. Если у двух игроков и более окажутся равные старшие карты, то каждый из этих игроков кладет по одной карте вверх рубашкой, затем еще по одной карте и тот игрок, у которого карта окажется старше, забирает карты. Если равные по значению карты последние у игроков, то забирает тот игрок, который первый положит эту карту. Стоит отметить, что при игре колодой в 36 карт, шестерка считается старше туза, а при игре колодой в 52 карты, двойка считается старше туза. Выигрывает игрок, который соберет все карты у себя.</p>
+</form>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Пьяница</title>
+<script type="text/javascript">
+<!--
+var cards = new Array(); /* Массив карт игроков*/
+var a = new Array('двойка', 'тройка', 'четвёрка', 'пятёрка', 'шестёрка', 'семёрка', 'восьмёрка', 'девятка', 'десятка', 'валет', 'дама', 'король', 'туз');
+var b = new Array(' пики',' черви',' бубны',' крести');
+
+Array.prototype.shuffle = function( b ){
+	/*	Функция для перемешивания массива*/
+ 	var i = this.length, j, t;
+ 	while( i ) {
+  		j = Math.floor( ( i-- ) * Math.random() );
+  		t = b && typeof this[i].shuffle!=='undefined' ? this[i].shuffle() 		: this[i];
+  		this[i] = this[j];
+  		this[j] = t;
+ 	}
+
+ 	return this;
+};
+
+function gen_cards() {
+	/*	Функция для создания массива массивов карт игроков	*/
+	var num_cards = 0;
+		/*Определение числа карт*/
+	if (parent.frame1.document.menu.cards[0].checked) 
+		num_cards = parent.frame1.document.menu.cards[0].value 
+	else num_cards = parent.frame1.document.menu.cards[1].value;
+	//alert("ok");
+	/*Создание массива карт*/
+	var i = 0;
+	if (num_cards == "36") j = 4
+	else j = 0;
+	
+		for (j;j<a.length;j++){
+			for (k=0;k<b.length;k++){
+				cards[i] = a[j] + b[k];
+				i+=1;
+			}
+		}
+				
+	cards.shuffle();   /*Перемешивание массива карт*/  
+
+	/*Распределение карт по игрокам*/
+	var p = new Array();
+	for (i = 0; i < 2; i++) {
+		p = cards.slice(0, num_cards/2);
+		cards.push(p);
+		for (j = 0; j < num_cards/2; j++){
+			cards.shift();
+		}
+	}
+	return false;
+};
+
+function go_main(){
+	/* 	Создание массива карт и переход на станицу с игрой*/
+	gen_cards();
+	parent.frame2.document.location.href = "main.html"
+	parent.frame1.document.location.href = "title.html";
+	return false;
+}
+
+function go_menu(){
+	/* 	Переход на станицу с меню*/
+	parent.frame1.document.location.href = "menu.html";
+	parent.frame2.document.location.href = "title.html";
+	return false;
+}
+
+function get_cards(){
+	/* 	Передача массива карт на страницу с игрой*/
+	return cards;
+}
+
+function get_name_cards(){
+	/* 	Передача массива карт на страницу с игрой*/
+	return a;
+}
+//-->
+</script>
+</head>
+<frameset rows="30%,*" frameborder="yes" border="1" bordercolor="#000099">
+<frame name="frame1" src="menu.html">
+<frame src="title.html" name="frame2">
+</frameset>
+<noframes></noframes>
+</html>

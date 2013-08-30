@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>main</title>
+<script type="text/javascript">
+<!--
+var hod = 1; /*Номер ходящего игрока*/
+var win = false; /*Проверка выигрыша в игре*/
+var auto_play = false; /*Автоматическая игра*/
+var timer = false; /*Переменная для возможности остановки таймера*/
+var h_array = new Array(); /*Массив открытых карт*/
+var name_cards = parent.get_name_cards(); /*Массив имён карт*/
+var cards = parent.get_cards(); /*Массив карт игроков*/
+var num_cards = cards[0].length; 
+
+window.onload = function () {
+	/*Показ числа карт в колодах игроков*/
+	parent.frame2.document.main.num_1.value = cards[0].length;
+	parent.frame2.document.main.num_2.value = cards[1].length;
+}
+
+function class_card() {
+	/*Включение возможности прерывания таймера и показ рубашки карт*/
+	timer = true;
+	parent.frame2.document.main.card_1.className = "textarea_card";
+	parent.frame2.document.main.card_2.className = "textarea_card";
+	parent.frame2.document.main.card_1.value = "";
+	parent.frame2.document.main.card_2.value = "";
+}
+
+function number_of_cards(){
+	/*Показ числа карт в массивах игроков и проверка на выигрыш*/
+	parent.frame2.document.main.num_1.value = cards[0].length;
+	parent.frame2.document.main.num_2.value = cards[1].length;
+	if ((cards[0].length == 0)||(cards[1].length == 0)){
+		class_card();
+		if (cards[0].length == 0)
+			alert("Выиграл игрок № 2 !!")
+		else alert("Выиграл игрок № 1 !!");
+		parent.frame2.document.main.go_but.disabled = "disabled";
+		parent.frame2.document.main.auto_but.disabled = "disabled";
+		parent.frame2.document.main.hod.value = "---";
+		parent.frame2.document.main.msg.value = "";
+		if (confirm("В меню?")) parent.go_menu()
+		else win = true;
+		clearInterval(intervalID);
+	}
+}
+
+function game(){
+	/*Основная функция проведения хода игроков*/
+	if (!win) {
+		if ((timer)&&(!auto_play)) clearTimeout(timeoutId);
+		/* Добавление в массив открытых карт*/
+		h_array.push(cards[0][0],cards[1][0]); 
+		/*Показ открытых карт*/
+		parent.frame2.document.main.card_1.className = "textarea_none";
+		parent.frame2.document.main.card_2.className = "textarea_none";
+		parent.frame2.document.main.card_1.value = cards[0][0];
+		parent.frame2.document.main.card_2.value = cards[1][0];
+		/*Установка таймера показа карт*/
+		if (!auto_play) timeoutId = setTimeout(class_card, 3000);
+		/*Выделение цифры карты для сравнения карт*/
+		ind1 = cards[0][0].indexOf(' ',0);
+		word1 = cards[0][0].slice(0,ind1);
+		ind2 = cards[1][0].indexOf(' ',0);
+		word2 = cards[1][0].slice(0,ind2);	
+		/*Сравнение карт*/
+		if (word1 == word2){
+			parent.frame2.document.main.msg.value = "Спор: равные карты";
+			/*Проверка на количество оставшихся карт у игроков*/
+			if ((cards[0].length < 3)||(cards[1].length < 3)){
+				if (cards[0].length < 3)
+					p = 1
+				else p = 2;
+				if (!auto_play)
+					alert('Так как у игрока № '+ p + ' меньше 3 карт, то забирает карты тот игрок, чей сейчас ход');
+				parent.frame2.document.main.msg.value = "Карты забирает игрок № " + (hod+1);
+				/*Удаление открытых карт из массивов карт игроков*/	
+				cards[0].shift();
+				cards[1].shift();
+				/*Добавление открытых карт в массив игрока, чей сейчас ход*/
+				cards[hod] = cards[hod].concat(h_array);
+				n = h_array.length;
+				/*Очистка массива открытых карт*/
+				for (i = 0; i<n;i++) 
+					h_array.pop();
+				/*Показ количества карт в массивах*/
+				number_of_cards();
+			}
+			else {
+				if (!auto_play)
+					alert("Игроки кладут по одной карте вверх рубашкой, затем открывают ещё по одной карте");
+				/* Добавление в массив открытых карт ещё по одной карте*/
+				h_array.push(cards[0][1],cards[1][1]);
+				/*Удаление открытых карт и перевёрнутых вверх рубашкой из массивов карт игроков*/
+				for (k = 0;k < 2; k++){
+					cards[0].shift();
+					cards[1].shift();
+				}
+				/*Показ количества карт в массивах*/
+				number_of_cards();
+				/*рекурсивный вызов функции*/	
+					game()			
+			}
+		}
+
+		else {
+			/*Определение номера игрока, забирающего карты*/
+			var s_word = '';
+			if (num_cards == 18) s_word =  'шестёрка'
+			else  s_word =  'двойка';
+			
+			if ((word1 == 'туз')||(word2 == 'туз')) {
+				if ((word1 == s_word)||(word2 == s_word)) {
+						if (word1 == s_word) v = 0
+						else v = 1;
+					} 
+					else
+						if (word1 == 'туз') v = 0
+						else v = 1;
+			}
+			else 
+				if (name_cards.indexOf(word1)>name_cards.indexOf(word2))
+					v = 0
+				else v = 1;
+			
+			hod = v;
+			parent.frame2.document.main.hod.value = hod+1;
+			parent.frame2.document.main.msg.value = "Карты забирает игрок № " + (v+1);	
+			/*Удаление открытых карт из массивов карт игроков*/
+			cards[0].shift();
+			cards[1].shift();
+			/*Добавление открытых карт в массив игрока, чья карта больше*/
+			cards[v] = cards[v].concat(h_array);
+			n = h_array.length;
+			/*Очистка массива открытых карт*/
+			for (i = 0; i<n;i++) 
+				h_array.pop();
+			/*Показ количества карт в массивах*/
+			number_of_cards();
+		}
+	}
+}
+
+function auto_game() {
+	/*Автоматическая игра*/
+	var intervalID = setInterval( game , 50);
+	parent.frame2.document.main.go_but.disabled = "disabled";
+	auto_play = true;	
+}
+//-->
+</script>
+<style type="text/css">
+.textarea_card {
+	background-image: url(card.png);
+	width:67pt; height:70pt;
+}
+.textarea_none {
+	background-image: none;
+	width:67pt; height:70pt; font-size:18px;
+	text-align:center; color:#609;
+}
+</style>
+</head>
+<body bgcolor="#99FFFF">
+<form name="main">
+<hr>
+<table width="500" border="2" align="center" bordercolor="#000099" bgcolor="#FFFFCC">
+<tr style="
+background-color:#CCF; font-size:20px; color:#009"><th>Игрок № 1</th>
+<th>Игрок № 2</th>
+</tr>
+<tr align="center"><td style="font-style:italic">В колоде карт: <input name="num_1" readonly="readonly" style="width:20pt;">
+</td>
+<td style="font-style:italic">В колоде карт: <input readonly="readonly" style="width:20pt;" name="num_2">
+</td>
+</tr>
+<tr align="center">
+<td> Карта:<br>
+  <textarea  class="textarea_card" name="card_1" readonly="readonly"></textarea>
+</td>
+<td> Карта:<br>
+  <textarea class="textarea_card" name="card_2" readonly="readonly"  ></textarea>
+</td>
+</tr>
+<tr align="center">
+<td colspan="2"><input name="msg" readonly="readonly" style=" font-size:18px; color:#009; width:290pt; background-color:#CFC; border:thin; text-align:center;"></td>
+</tr>
+</table>
+<hr>
+<p align="center" ><input type="button" style="background-color:#FC9; font-family:'Comic Sans MS', cursive; font-size:20px;" name="go_but" value="Следующий ход" onclick="game()"></p>
+<p align="center" ><input type="button" style="background-color:#6F9; font-family:'Comic Sans MS', cursive; font-size:20px;" name="auto_but" value="Автоматическая игра" onclick="auto_game()"></p>
+<p style="background-color:#69F; width:161pt; border:medium; color:#006; font-size: 16px;">Следующий ход игрока № 
+  <input name="hod" readonly="readonly" style="width:17pt;" value="1"></p>
+<p align="right"><input type="button" style="background-color:#CCF; color:#009; font-size:16px" name="menu_but" value="В меню" onclick="parent.go_menu()"></p>
+</form>
+</body>
+</html>
